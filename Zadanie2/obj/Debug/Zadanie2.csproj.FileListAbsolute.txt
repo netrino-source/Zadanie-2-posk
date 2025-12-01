@@ -1,0 +1,11 @@
+E:\proj\Zadanie-2-posk\Zadanie2\obj\Debug\Zadanie2.csproj.AssemblyReference.cache
+E:\proj\Zadanie-2-posk\Zadanie2\obj\Debug\Zadanie2.csproj.SuggestedBindingRedirects.cache
+E:\proj\Zadanie-2-posk\Zadanie2\obj\Debug\Zadanie2.Optycznyprosty.resources
+E:\proj\Zadanie-2-posk\Zadanie2\obj\Debug\Zadanie2.Properties.Resources.resources
+E:\proj\Zadanie-2-posk\Zadanie2\obj\Debug\Zadanie2.csproj.GenerateResource.cache
+E:\proj\Zadanie-2-posk\Zadanie2\obj\Debug\Zadanie2.csproj.CoreCompileInputs.cache
+E:\proj\Zadanie-2-posk\Zadanie2\bin\Debug\Zadanie2.exe.config
+E:\proj\Zadanie-2-posk\Zadanie2\bin\Debug\Zadanie2.exe
+E:\proj\Zadanie-2-posk\Zadanie2\bin\Debug\Zadanie2.pdb
+E:\proj\Zadanie-2-posk\Zadanie2\obj\Debug\Zadanie2.exe
+E:\proj\Zadanie-2-posk\Zadanie2\obj\Debug\Zadanie2.pdb
