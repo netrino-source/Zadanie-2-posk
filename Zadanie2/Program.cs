@@ -16,7 +16,7 @@ namespace Zadanie2
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Optycznyprosty());
+            Application.Run(new Menu());
         }
     }
 }

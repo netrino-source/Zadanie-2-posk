@@ -78,6 +78,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AkustycznyProsty.resx">
+      <DependentUpon>AkustycznyProsty.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Menu.resx">
+      <DependentUpon>Menu.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="OptycznyProsty.resx">
       <DependentUpon>OptycznyProsty.cs</DependentUpon>
     </EmbeddedResource>

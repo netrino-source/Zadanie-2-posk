@@ -9,3 +9,5 @@ E:\proj\Zadanie-2-posk\Zadanie2\bin\Debug\Zadanie2.exe
 E:\proj\Zadanie-2-posk\Zadanie2\bin\Debug\Zadanie2.pdb
 E:\proj\Zadanie-2-posk\Zadanie2\obj\Debug\Zadanie2.exe
 E:\proj\Zadanie-2-posk\Zadanie2\obj\Debug\Zadanie2.pdb
+E:\proj\Zadanie-2-posk\Zadanie2\obj\Debug\Zadanie2.AkustycznyProsty.resources
+E:\proj\Zadanie-2-posk\Zadanie2\obj\Debug\Zadanie2.Menu.resources
