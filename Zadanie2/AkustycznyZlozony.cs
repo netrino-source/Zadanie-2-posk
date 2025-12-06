@@ -12,122 +12,166 @@ namespace Zadanie2
 {
     public partial class AkustycznyZlozony : Form
     {
-     Stopwatch stoper = new Stopwatch();
- Random rng = new Random();
- bool oczekujeNaReakcje = false;
+     private Stopwatch stoper = new Stopwatch();
+        private Random rng = new Random();
 
- int totalTrials = 12;      // liczba prób
- int currentTrial = 0;
+        private int trainingTrials = 3;   // faza szkoleniowa
+        private int testTrials = 12;      // faza właściwa
 
- Color currentColor;        // jaki kolor jest teraz
- Keys correctKey;           // jaki klawisz jest prawidłowy
+        private int currentTrial = 0;
+        private bool trainingMode = true;
+        private bool oczekuje = false;
+
+        private Keys correctKey;       // jaki klawisz jest prawidłowy
 
         public AkustycznyZlozony()
         {
             InitializeComponent();
             this.KeyPreview = true;             // żeby formularz widział klawisze
 this.BackColor = Color.LightGray;
+ panelInstrukcja.Visible = true;
+            panelTest.Visible = false;
+            panelKoniec.Visible = false;
+
+            lblInstrukcja.Text =
+                "TEST AKUSTYCZNY ZŁOŻONY\n\n" +
+                "Po losowym czasie usłyszysz ton:\n" +
+                "  • Wysoki → naciśnij A\n" +
+                "  • Niski  → naciśnij L\n" +
+                "  • Brak tonu → NIE reaguj\n\n" +
+                "Najpierw wykonasz 3 próby szkoleniowe,\n" +
+                "a następnie 12 prób testu właściwego.\n\n" +
+                "Kliknij START, aby rozpocząć szkolenie.";
         }
-            private async void btnStart_Click(object sender, EventArgs e)
-    {
-        button1.Enabled = false;
-        currentTrial = 0;
-        labelinfo.Text = "Przygotuj się do testu…";
-
-        await Task.Delay(1500);
-        NextTrial();
-    }
-
-    private async void NextTrial()
-    {
-        currentTrial++;
-
-        if (currentTrial > totalTrials)
+            private async void btnStartSzkolenie_Click(object sender, EventArgs e)
         {
-            // KONIEC TESTU – PODSUMOWANIE
-            this.BackColor = Color.LightGray;
-            
+            panelInstrukcja.Visible = false;
+            panelTest.Visible = true;
 
-            button1.Enabled = true;
-            return;
-        }
+            trainingMode = true;
+            currentTrial = 0;
 
-        // EKRAN OCZEKIWANIA
-        this.BackColor = Color.LightGray;
-        labelinfo.Text = $"Próba {currentTrial}/{totalTrials}. Czekaj…";
+            lblInfo.Text = "Przygotuj się...";
+            await Task.Delay(1000);
 
-        // losowy czas od 2 do 5 sekund
-        int delay = rng.Next(2000, 5000);
-        await Task.Delay(delay);
-
-        // WYBIERAMY LOSOWY BODZIEC
-        int los = rng.Next(3); // 0,1,2 → 3 kolory
-
-        if (los == 0)
-        {
-            currentColor = Color.Green;
-            correctKey = Keys.F;       // zielony → F
-            labelinfo.Text = "Zielony → naciśnij F";
-        }
-        else if (los == 1)
-        {
-            currentColor = Color.Red;
-            correctKey = Keys.J;       // czerwony → J
-            labelinfo.Text = "Czerwony → naciśnij J";
-        }
-        else
-        {
-            currentColor = Color.Blue;
-            correctKey = Keys.None;    // niebieski → NO-GO
-            labelinfo.Text = "Niebieski → NIE reaguj!";
+            NextTrial();
         }
 
-        // WYŚWIETLAMY BODZIEC
-        this.BackColor = currentColor;
 
-        oczekujeNaReakcje = true;
-        stoper.Restart();
-    }
-
-    private void OptycznyZlozony_KeyDown(object sender, KeyEventArgs e)
-    {
-        if (!oczekujeNaReakcje) return;
-
-        // PRZYPADEK 1: bodziec NIEBIESKI → NO-GO
-        if (correctKey == Keys.None)
+        // --------------------------------------------------------------------
+        //  KOLEJNA PRÓBA
+        // --------------------------------------------------------------------
+        private async void NextTrial()
         {
-            // Użytkownik nacisnął cokolwiek → błąd
-           
-            labelinfo.Text = "BŁĄD: przy niebieskim nie wolno naciskać!";
-            oczekujeNaReakcje = false;
-            this.BackColor = Color.LightGray;
+            currentTrial++;
 
-            Task.Delay(1500).ContinueWith(_ => this.Invoke(new Action(NextTrial)));
-            return;
+            // Koniec szkolenia
+            if (trainingMode && currentTrial > trainingTrials)
+            {
+                trainingMode = false;
+                currentTrial = 0;
+
+                lblInfo.Text = "Koniec szkolenia. Trwa przygotowanie...";
+                await Task.Delay(2000);
+
+                NextTrial();
+                return;
+            }
+
+            // Koniec testu
+            if (!trainingMode && currentTrial > testTrials)
+            {
+                ShowEndMessage();
+                return;
+            }
+
+            lblInfo.Text = trainingMode
+                ? $"Szkolenie – próba {currentTrial}/{trainingTrials}. Czekaj..."
+                : $"Test – próba {currentTrial}/{testTrials}. Czekaj...";
+
+            await Task.Delay(rng.Next(2000, 5000));
+
+            // Losowanie bodźca
+            int los = rng.Next(3); // 0 = wysoki, 1 = niski, 2 = brak
+
+            if (los == 0)
+            {
+                Console.Beep(1200, 300);
+                correctKey = Keys.A;
+                lblInfo.Text = "Wysoki ton → A";
+            }
+            else if (los == 1)
+            {
+                Console.Beep(400, 300);
+                correctKey = Keys.L;
+                lblInfo.Text = "Niski ton → L";
+            }
+            else
+            {
+                correctKey = Keys.None;
+                lblInfo.Text = "Brak tonu → NIE reaguj!";
+            }
+
+            oczekuje = true;
+            stoper.Restart();
         }
 
-        // PRZYPADEK 2: poprawny klawisz
-        if (e.KeyCode == correctKey)
+
+        // --------------------------------------------------------------------
+        //  OBSŁUGA REAKCJI
+        // --------------------------------------------------------------------
+        private void AkustycznyZlozony_KeyDown(object sender, KeyEventArgs e)
         {
+            if (!oczekuje) return;
+
+            oczekuje = false;
             stoper.Stop();
-            double t = stoper.Elapsed.TotalMilliseconds;
-           
 
-            labelinfo.Text = $"Dobry klawisz! Czas: {t:F0} ms";
+            // Przypadek NO-GO (nie reagować)
+            if (correctKey == Keys.None)
+            {
+                lblInfo.Text = e.KeyCode == Keys.A || e.KeyCode == Keys.L
+                    ? "BŁĄD: nie powinieneś reagować!"
+                    : "OK (brak reakcji)";
+
+                Task.Delay(1000).ContinueWith(_ =>
+                    this.Invoke(new Action(NextTrial)));
+                return;
+            }
+
+            // Poprawny
+            if (e.KeyCode == correctKey)
+            {
+                lblInfo.Text = $"Dobrze!";
+            }
+            else
+            {
+                lblInfo.Text = "Zły klawisz!";
+            }
+
+            Task.Delay(1000).ContinueWith(_ =>
+                this.Invoke(new Action(NextTrial)));
         }
-        else
+
+
+        // --------------------------------------------------------------------
+        //  KONIEC TESTU (bez wyników)
+        // --------------------------------------------------------------------
+        private void ShowEndMessage()
         {
-            // PRZYPADEK 3: zły klawisz
-            
-            labelinfo.Text = "ZŁY KLAWISZ!";
+            panelTest.Visible = false;
+            panelKoniec.Visible = true;
+
+            lblKoniec.Text =
+                "Test zakończony.\n" +
+                "Dziękujemy za udział.";
         }
 
-        // przejście do następnej próby
-        oczekujeNaReakcje = false;
-        this.BackColor = Color.LightGray;
-        Task.Delay(1200).ContinueWith(_ => this.Invoke(new Action(NextTrial)));
+        private void btnPowrot_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }
-    }
-}
+
 
